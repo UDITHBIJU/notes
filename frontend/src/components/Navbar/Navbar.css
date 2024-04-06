@@ -1,0 +1,8 @@
+.Navbar{
+    display: flex;
+    background-color: darkgoldenrod;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: aliceblue;
+}
