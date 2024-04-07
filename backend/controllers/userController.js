@@ -4,12 +4,11 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const signup = async (req, res, next) => {
 	const { email, password } = req.body;
-            console.log(req.body);
 
 	const existingUser = await User.findOne({ email: email });
 
 	if (existingUser) {
-		console.log(existingUser);
+		console.log(existingUser)
 		return res.status(400).json({ error: "User already exists" });
 	} else {
 		try {
@@ -42,10 +41,11 @@ const signin = async (req, res, next) => {
 			console.error("Error comparing passwords:", error);
 			return res.status(500).json({ error: "Internal server error" });
 		}
-	} else {
+	} else { 
 		return res.status(400).json({ error: "User not found" });
 	}
 };
+
 
 exports.signin = signin;
 exports.signup = signup;

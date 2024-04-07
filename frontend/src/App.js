@@ -28,9 +28,8 @@ function App() {
 					<Routes>
 						<Route path="/" Component={Signin} />
 						<Route path="/signin" Component={Signup} />
-
+						{isLoggedIn&&<Route path="/home" component={Home} />}
 						<Route path="/signup" Component={Signup} />
-						<Route path="/Home" Component={Home} />
 					</Routes>
 				</Router>
 			</AuthContext.Provider>
