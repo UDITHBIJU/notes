@@ -4,9 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../shared/AuthContext";
 import axios from "axios";
 import validator from "validator";
-const dotenv = require("dotenv");
 
-dotenv.config()
 function Form(props) {
 	const auth = useContext(AuthContext);
 	const [mail, setMail] = useState("");
@@ -47,12 +45,13 @@ function Form(props) {
 	const submitHandler = async (e) => {
 		e.preventDefault();
 
-		if (isValidEmail && isValidPassword && isValidOtp) {
+		if (isValidEmail && isValidPassword ) {
 			const uri =
 				props.to !== "signup"
 					? "http://localhost:4001/api/users/signup"
 					: "http://localhost:4001/api/users/signin";
 			try {
+				
 				let postData = {
 					email: mail,
 					password: password,
@@ -64,7 +63,7 @@ function Form(props) {
 
 				console.log(response);
 				auth.Login();
-				navigate("/home");
+				navigate("/home"); 
 			} catch (error) {
 				setErrorMessage("Invalid credentials"); 
 			}
@@ -124,7 +123,7 @@ function Form(props) {
 				<input
 					type="submit"
 					value={props.option}
-					disabled={!isValidEmail || !isValidPassword || !isValidOtp}
+					disabled={!isValidEmail || !isValidPassword || props.to!=="signup"?!isValidOtp:null}
 				/>
 			</form>
 			{errorMessage && (

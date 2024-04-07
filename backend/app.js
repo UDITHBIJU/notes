@@ -3,8 +3,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 const rout = require("./routes/user");
-
-
+require('dotenv').config()
 const app = express()
 mongoose.connect("mongodb://127.0.0.1:27017/notes");
 

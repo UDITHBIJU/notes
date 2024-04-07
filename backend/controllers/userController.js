@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-
+const jwt = require("jsonwebtoken");
 
 let otpValue = null;
 
@@ -10,9 +10,8 @@ const signup = async (req, res, next) => {
 	const { email, password, otp } = req.body;
 
 	try {
-		
 		if (otpValue == null || !otpValue === otp) {
-			console.log(otpValue)
+			console.log(otpValue);
 			return res.status(400).send("Invalid OTP");
 		}
 
@@ -24,8 +23,22 @@ const signup = async (req, res, next) => {
 		});
 
 		await createdUser.save();
-		otpValue = null
-		return res.status(201).json({ message: "User created successfully" });
+		otpValue = null;
+		let token;
+		token = jwt.sign(
+			{
+				userId: createdUser.id,
+				email: createdUser.email,
+			},
+			"secret_key",
+			{ expiresIn: "1h" }
+		);
+		return res.status(201).json({
+			message: "User created successfully",
+			userId: createdUser.id,
+			email: createdUser.email,
+			token: token,
+		});
 	} catch (error) {
 		return res.status(500).json({ error: "Internal server error" });
 	}
@@ -33,12 +46,29 @@ const signup = async (req, res, next) => {
 
 const signin = async (req, res, next) => {
 	const { email, password } = req.body;
+	console.log(req.body)
 	const existingUser = await User.findOne({ email: email });
 	if (existingUser) {
 		try {
 			const match = await bcrypt.compare(password, existingUser.password);
+			let token;
+			token = jwt.sign(
+				{
+					userId: existingUser.id,
+					email: existingUser.email,
+				},
+				"secret_key",
+				{ expiresIn: "1h" }
+			);
 			if (match) {
-				return res.status(200).json({ message: "Signin successful" });
+				return res
+					.status(200)
+					.json({
+						message: "Signin successful",
+						userId: existingUser.id,
+						email: existingUser.email,
+						token: token,
+					});
 			} else {
 				return res.status(400).json({ error: "Invalid password" });
 			}
@@ -63,8 +93,6 @@ const otp = async (req, res) => {
 	} else {
 		otpValue = generateOTP();
 
-		
-
 		sendOTP(email, otpValue)
 			.then(() => {
 				res.status(200).send("OTP sent successfully");
@@ -75,7 +103,7 @@ const otp = async (req, res) => {
 			});
 	}
 };
-  otpValue = generateOTP();
+otpValue = generateOTP();
 function generateOTP() {
 	return Math.floor(100000 + Math.random() * 900000);
 }
