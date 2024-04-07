@@ -27,7 +27,7 @@ function App() {
 				<Router>
 					<Routes>
 						<Route path="/" Component={Signin} />
-						<Route path="/signin" Component={Signup} />
+						<Route path="/signin" Component={Signin} />
 						{isLoggedIn&&<Route path="/home" component={Home} />}
 						<Route path="/signup" Component={Signup} />
 					</Routes>
