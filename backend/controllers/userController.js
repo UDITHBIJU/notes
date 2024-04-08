@@ -46,7 +46,7 @@ const signup = async (req, res, next) => {
 
 const signin = async (req, res, next) => {
 	const { email, password } = req.body;
-	console.log(req.body)
+	
 	const existingUser = await User.findOne({ email: email });
 	if (existingUser) {
 		try {
@@ -61,6 +61,7 @@ const signin = async (req, res, next) => {
 				{ expiresIn: "1h" }
 			);
 			if (match) {
+				
 				return res
 					.status(200)
 					.json({
@@ -69,6 +70,7 @@ const signin = async (req, res, next) => {
 						email: existingUser.email,
 						token: token,
 					});
+					
 			} else {
 				return res.status(400).json({ error: "Invalid password" });
 			}

@@ -61,10 +61,13 @@ function Form(props) {
 				}
 				const response = await axios.post(uri, postData);
 
-				console.log(response);
-				auth.Login();
+				
+
+				auth.Login(response.userId,response.token); 
+
 				navigate("/home"); 
 			} catch (error) {
+				console.log(error)
 				setErrorMessage("Invalid credentials"); 
 			}
 		} else if (!isValidEmail || (!isValidPassword && !isValidOtp)) {
