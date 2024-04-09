@@ -15,8 +15,7 @@ function App() {
 		
 		setIsLoggedIn(true);
 		setToken(token);
-		setUserId(uid);
-		console.log(token,uid) 
+		setUserId(uid);	
 		localStorage.setItem(
 			"userData",
 			JSON.stringify({ userId: uid, token: token })
@@ -51,7 +50,7 @@ function App() {
 					<Routes>
 						<Route path="/" Component={Signin} />
 						<Route path="/signin" Component={Signin} />
-						{isLoggedIn && <Route path="/home" component={Home} />}
+						{token && <Route path="/home" component={Home} />}
 						<Route path="/signup" Component={Signup} />
 					</Routes>
 				</Router>

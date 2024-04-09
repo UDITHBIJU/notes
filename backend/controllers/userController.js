@@ -3,18 +3,16 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 
-let otpValue = null;
+let otpMap = new Map();
 
 const saltRounds = 10;
 const signup = async (req, res, next) => {
 	const { email, password, otp } = req.body;
 
 	try {
-		if (otpValue == null || !otpValue === otp) {
-			console.log(otpValue);
-			return res.status(400).send("Invalid OTP");
-		}
-
+	    if (!otpMap.has(email) || otpMap.get(email) !== otp) {
+            return res.status(400).send("Invalid OTP");
+        }
 		const hashedPassword = await bcrypt.hash(password, saltRounds);
 
 		const createdUser = new User({
@@ -23,7 +21,7 @@ const signup = async (req, res, next) => {
 		});
 
 		await createdUser.save();
-		otpValue = null;
+		
 		let token;
 		token = jwt.sign(
 			{
@@ -33,6 +31,7 @@ const signup = async (req, res, next) => {
 			"secret_key",
 			{ expiresIn: "1h" }
 		);
+		otpMap.delete(email);
 		return res.status(201).json({
 			message: "User created successfully",
 			userId: createdUser.id,
@@ -46,7 +45,6 @@ const signup = async (req, res, next) => {
 
 const signin = async (req, res, next) => {
 	const { email, password } = req.body;
-	
 	const existingUser = await User.findOne({ email: email });
 	if (existingUser) {
 		try {
@@ -80,22 +78,25 @@ const signin = async (req, res, next) => {
 	} else {
 		return res.status(400).json({ error: "User not found" });
 	}
+
 };
 var transporter = nodemailer.createTransport({
 	host: "live.smtp.mailtrap.io",
-	port: 587,
-	auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+	port: 2525,
+	auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS , type: "login"},
 });
+
 
 const otp = async (req, res) => {
 	const { email } = req.body;
 	const existingUser = await User.findOne({ email: email });
+	
 	if (existingUser) {
 		return res.status(400).json({ error: "User already exists" });
 	} else {
-		otpValue = generateOTP();
-
-		sendOTP(email, otpValue)
+		 const generatedOTP = generateOTP();
+		 otpMap.set(email, generatedOTP);
+		sendOTP(email, generatedOTP)
 			.then(() => {
 				res.status(200).send("OTP sent successfully");
 			})
@@ -105,8 +106,9 @@ const otp = async (req, res) => {
 			});
 	}
 };
-otpValue = generateOTP();
+
 function generateOTP() {
+
 	return Math.floor(100000 + Math.random() * 900000);
 }
 
@@ -118,7 +120,7 @@ function sendOTP(email, otp) {
 			subject: "OTP Verification",
 			text: `Your OTP for verification is: ${otp}`,
 		};
-
+		
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				reject(error);

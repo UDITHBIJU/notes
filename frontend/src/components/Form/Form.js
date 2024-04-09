@@ -44,7 +44,7 @@ function Form(props) {
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
-
+		
 		if (isValidEmail && isValidPassword ) {
 			const uri =
 				props.to !== "signup"
@@ -63,7 +63,7 @@ function Form(props) {
 
 				
 
-				auth.Login(response.userId,response.token); 
+				auth.Login(response.data.userId,response.data.token); 
 
 				navigate("/home"); 
 			} catch (error) {
@@ -99,7 +99,7 @@ function Form(props) {
 				value={otp}
 				onChange={otpHandler}
 			/>
-			<button onClick={otpGenerate} disabled={!isValidEmail}>
+			<button type="button" onClick={otpGenerate} disabled={!isValidEmail}>
 				generate
 			</button>
 		</>
