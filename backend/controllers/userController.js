@@ -10,9 +10,9 @@ const signup = async (req, res, next) => {
 	const { email, password, otp } = req.body;
 
 	try {
-	    if (!otpMap.has(email) || otpMap.get(email) !== otp) {
-            return res.status(400).send("Invalid OTP");
-        }
+		if (!otpMap.has(email) || otpMap.get(email) !== otp) {
+			return res.status(400).send("Invalid OTP");
+		}
 		const hashedPassword = await bcrypt.hash(password, saltRounds);
 
 		const createdUser = new User({
@@ -21,7 +21,7 @@ const signup = async (req, res, next) => {
 		});
 
 		await createdUser.save();
-		
+
 		let token;
 		token = jwt.sign(
 			{
@@ -59,16 +59,12 @@ const signin = async (req, res, next) => {
 				{ expiresIn: "1h" }
 			);
 			if (match) {
-				
-				return res
-					.status(200)
-					.json({
-						message: "Signin successful",
-						userId: existingUser.id,
-						email: existingUser.email,
-						token: token,
-					});
-					
+				return res.status(200).json({
+					message: "Signin successful",
+					userId: existingUser.id,
+					email: existingUser.email,
+					token: token,
+				});
 			} else {
 				return res.status(400).json({ error: "Invalid password" });
 			}
@@ -78,24 +74,28 @@ const signin = async (req, res, next) => {
 	} else {
 		return res.status(400).json({ error: "User not found" });
 	}
-
 };
 var transporter = nodemailer.createTransport({
 	host: "live.smtp.mailtrap.io",
 	port: 2525,
-	auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS , type: "login"},
+	auth: {
+		user: process.env.SMTP_USER,
+		pass: process.env.SMTP_PASS,
+		type: "login",
+	},
 });
-
 
 const otp = async (req, res) => {
 	const { email } = req.body;
 	const existingUser = await User.findOne({ email: email });
-	
+
 	if (existingUser) {
 		return res.status(400).json({ error: "User already exists" });
 	} else {
-		 const generatedOTP = generateOTP();
-		 otpMap.set(email, generatedOTP);
+		const generatedOTP = generateOTP();
+
+		otpMap.set(email, generatedOTP + "");
+
 		sendOTP(email, generatedOTP)
 			.then(() => {
 				res.status(200).send("OTP sent successfully");
@@ -108,7 +108,6 @@ const otp = async (req, res) => {
 };
 
 function generateOTP() {
-
 	return Math.floor(100000 + Math.random() * 900000);
 }
 
@@ -120,12 +119,11 @@ function sendOTP(email, otp) {
 			subject: "OTP Verification",
 			text: `Your OTP for verification is: ${otp}`,
 		};
-		
+
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
 				reject(error);
 			} else {
-				console.log("Email sent: " + info.response);
 				resolve();
 			}
 		});
