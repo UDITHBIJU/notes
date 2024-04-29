@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
+const { title } = require('process')
 
 const listSchema = new mongoose.Schema({
-    list:'string'
+    title:'string',
+    content:'string',
 })
 const userSchema = new mongoose.Schema({
     email:'string',

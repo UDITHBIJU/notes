@@ -129,7 +129,37 @@ function sendOTP(email, otp) {
 		});
 	});
 }
+const createNote = async (req, res) => {
+	const { title, content, userDataJson } = req.body;
+	const userData = JSON.parse(userDataJson);
+	const user = await User.findById(userData.userId);
+	user.lists.push({ title: title, content: content });
+	await user.save();
+	res.redirect("http://localhost:3000/home");
+};
 
+const sendNotes = async (req, res) => {
+	const userId = req.query.userId
+	const user = await User.findById(userId);
+	const lists = user.lists;
+	res.status(200).json(lists);
+}
+const DeleteNotes = async (req, res) => {
+
+	const userId = req.query.userId;
+	const noteId = req.params.noteId;
+	const user = await User.findById(userId);
+		
+		user.lists.pull({ _id: noteId });
+		await user.save();
+		res.status(200).json({ message: "Note deleted successfully" });
+	
+}
+const logout = async (req, res) => {}
+exports.logout = logout;
 exports.signin = signin;
 exports.signup = signup;
 exports.otp = otp;
+exports.createNote = createNote;
+exports.sendNotes = sendNotes;
+exports.DeleteNotes = DeleteNotes

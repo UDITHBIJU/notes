@@ -5,6 +5,7 @@ import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import { AuthContext } from "./shared/AuthContext";
 import Home from "./pages/Home";
+import Notes from "./pages/Notes";
 
 function App() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,7 +51,8 @@ function App() {
 					<Routes>
 						<Route path="/" Component={Signin} />
 						<Route path="/signin" Component={Signin} />
-						{token && <Route path="/home" component={Home} />}
+						{token && <Route path="/home" Component={Home} />}
+						{token && <Route path="/notes" Component={Notes} />}
 						<Route path="/signup" Component={Signup} />
 					</Routes>
 				</Router>
