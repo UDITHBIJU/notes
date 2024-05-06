@@ -129,37 +129,72 @@ function sendOTP(email, otp) {
 		});
 	});
 }
+function getCurrentDate() {
+	const currentDate = new Date();
+	const day = currentDate.getDate();
+	const month = currentDate.getMonth() + 1;
+	const year = currentDate.getFullYear();
+
+	const formattedDay = day < 10 ? "0" + day : day;
+	const formattedMonth = month < 10 ? "0" + month : month;
+
+	return `${formattedDay}/${formattedMonth}/${year}`;
+}
 const createNote = async (req, res) => {
 	const { title, content, userDataJson } = req.body;
 	const userData = JSON.parse(userDataJson);
 	const user = await User.findById(userData.userId);
-	user.lists.push({ title: title, content: content });
+	
+	user.lists.push({ title: title, content: content,date:getCurrentDate() });
 	await user.save();
 	res.redirect("http://localhost:3000/home");
 };
 
 const sendNotes = async (req, res) => {
-	const userId = req.query.userId
+	const userId = req.query.userId;
 	const user = await User.findById(userId);
 	const lists = user.lists;
 	res.status(200).json(lists);
-}
+};
 const DeleteNotes = async (req, res) => {
-
 	const userId = req.query.userId;
 	const noteId = req.params.noteId;
 	const user = await User.findById(userId);
-		
-		user.lists.pull({ _id: noteId });
-		await user.save();
-		res.status(200).json({ message: "Note deleted successfully" });
-	
-}
-const logout = async (req, res) => {}
+
+	user.lists.pull({ _id: noteId });
+	await user.save();
+	res.status(200).json({ message: "Note deleted successfully" });
+};
+const sendReminder = async (req, res) => {
+	const userId = req.query.userId;
+	const user = await User.findById(userId);
+	const reminder = user.reminders;
+	res.status(200).json(reminder);
+};
+const DeleteReminder = async (req, res) => {
+	const userId = req.query.userId;
+	const reminderId = req.params.reminderId;
+	const user = await User.findById(userId);
+	user.reminders.pull({ _id: reminderId });
+	await user.save();
+	res.status(200).json({ message: "reminder deleted successfully" });
+};
+const addReminder = async (req, res) => {
+	const { title, date, message, userDataJson } = req.body;
+	const userData = JSON.parse(userDataJson);
+	const user = await User.findById(userData.userId);
+	user.reminders.push({ title: title, date: date, message: message ,dateString:getCurrentDate()});
+	await user.save();
+};
+const logout = async (req, res) => {};
+
 exports.logout = logout;
 exports.signin = signin;
 exports.signup = signup;
 exports.otp = otp;
 exports.createNote = createNote;
 exports.sendNotes = sendNotes;
-exports.DeleteNotes = DeleteNotes
+exports.DeleteNotes = DeleteNotes;
+exports.addReminder = addReminder;
+exports.sendReminder = sendReminder;
+exports.DeleteReminder = DeleteReminder;

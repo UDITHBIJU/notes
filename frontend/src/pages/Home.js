@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./Home.css";
 import Navbar from "../components/Navbar/Navbar";
-import SidePanel from '../components/sidepanel/SidePanel';
-import axios from 'axios';
+import SidePanel from "../components/sidepanel/SidePanel";
+import axios from "axios";
 function Home() {
 	const [note, setNote] = useState({
 		title: "",
@@ -21,25 +21,27 @@ function Home() {
 	}
 
 	async function submitNote(event) {
-		// props.onAdd(note);
+		
 		setNote({
 			title: "",
 			content: "",
 		});
 		event.preventDefault();
-    try {
-			const data = await axios.post("http://localhost:4001/api/users/createnote", {
-				title: note.title,
-				content: note.content,
-				userDataJson: localStorage.getItem("userData"),
-			});
-			console.log(data)
+		try {
+			const data = await axios.post(
+				"http://localhost:4001/api/users/createnote",
+				{
+					title: note.title,
+					content: note.content,
+					userDataJson: localStorage.getItem("userData"),
+				}
+			);
+			console.log(data);
 		} catch (error) {
 			console.error("Error creating note:", error);
 			if (error.response && error.response.status === 401) {
-				// Unauthorized error, clear local storage and redirect to login
-				localStorage.removeItem('userData');
-				window.location.href = '/login';
+				localStorage.removeItem("userData");
+				window.location.href = "/signin";
 			}
 		}
 	}
@@ -47,9 +49,10 @@ function Home() {
 	return (
 		<div>
 			<Navbar />
-			<SidePanel/>
+			<SidePanel />
 			<div className="container">
 				<form
+					onSubmit={submitNote}
 					className="create"
 					action="http://localhost:4001/api/users/createnote"
 					method="POST"
@@ -69,10 +72,10 @@ function Home() {
 					/>
 					<input
 						type="hidden"
-						name="userDataJson" 
+						name="userDataJson"
 						value={localStorage.getItem("userData")}
 					/>
-					<button onSubmit={submitNote}>Add</button>
+					<button>Add</button>
 				</form>
 			</div>
 		</div>

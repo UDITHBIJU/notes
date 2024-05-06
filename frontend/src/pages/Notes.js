@@ -42,11 +42,12 @@ function Notes() {
 	return (
 		<div>
 			<Navbar />
-<SidePanel />
+			<SidePanel />
 			{userNotes.map((note, index) => (
 				<Note
 					title={note.title}
 					content={note.content}
+					date = {note.date}
 					key={note._id}
 					onDelete={() => deleteNote(note._id)}
 				/>

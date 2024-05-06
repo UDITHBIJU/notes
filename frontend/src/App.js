@@ -6,6 +6,8 @@ import Signup from "./pages/Signup";
 import { AuthContext } from "./shared/AuthContext";
 import Home from "./pages/Home";
 import Notes from "./pages/Notes";
+import SetReminder from './pages/SetReminder/SetReminder'
+import Reminder from "./pages/ReminderSection";
 
 function App() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,6 +55,9 @@ function App() {
 						<Route path="/signin" Component={Signin} />
 						{token && <Route path="/home" Component={Home} />}
 						{token && <Route path="/notes" Component={Notes} />}
+						{token && <Route path="/reminders" Component={Reminder} />}
+
+						{token && <Route path="/addreminder" Component={SetReminder} />}
 						<Route path="/signup" Component={Signup} />
 					</Routes>
 				</Router>

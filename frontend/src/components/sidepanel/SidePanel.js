@@ -29,6 +29,12 @@ const handleLogout = () => {
 				<li>
 					<Link to="/notes">Notes</Link>
 				</li>
+				<li>
+					<Link to="/addreminder">Set Reminder</Link>
+				</li>
+				<li>
+					<Link to="/reminders">My Reminders</Link>
+				</li>
 			</ul>
 			<button onClick={handleLogout}>Logout</button>
 		</div>

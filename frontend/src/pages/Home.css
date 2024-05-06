@@ -34,6 +34,11 @@ header h1 {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+.note h5{
+    position: relative;
+  float: left;
+  color: #f5ba13;
+}
 
 .note button {
   position: relative;
@@ -41,7 +46,7 @@ header h1 {
   margin-right: 10px;
   color: #f5ba13;
   border: none;
-  width: 36px;
+  width: 60px;
   height: 36px;
   cursor: pointer;
   outline: none;
